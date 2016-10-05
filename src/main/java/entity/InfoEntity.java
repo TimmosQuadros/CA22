@@ -16,6 +16,8 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -23,6 +25,7 @@ import javax.persistence.OneToMany;
  */
 @Inheritance(strategy=InheritanceType.JOINED)
 @Entity
+@XmlRootElement
 public class InfoEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -54,6 +57,7 @@ public class InfoEntity implements Serializable {
         this.mail = mail;
     }
 
+    @XmlTransient
     public List<Phone> getPhone() {
         return phone;
     }

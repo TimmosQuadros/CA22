@@ -5,14 +5,18 @@
  */
 package rest;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import entity.Company;
 import entity.Hobby;
+import entity.InfoEntity;
 import entity.Person;
 import entity.Phone;
 import facade.Facade;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -26,6 +30,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import jsonmappers.PersonMapper;
 import utility.JSONConverter;
 
 /**
@@ -38,7 +43,7 @@ public class InfoREST {
 
     @Context
     private UriInfo context;
-
+    private static Gson gson = new Gson();
     private EntityManagerFactory emf;
     private Facade facade;
 
@@ -60,72 +65,86 @@ public class InfoREST {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("person/{phone}")
     public String getPerson(@PathParam("phone") int phone) {
-        JsonArray datasetsHobies = new JsonArray();
-        JsonArray datasetsPhones = new JsonArray();
-        JsonArray datasetsAddress = new JsonArray();
-
-        JsonObject JSON = new JsonObject();
-
-        List<Person> persons = facade.getPersons();
-
+//        JsonArray datasetsHobies = new JsonArray();
+//        JsonArray datasetsPhones = new JsonArray();
+//        JsonArray datasetsAddress = new JsonArray();
+//
+//        JsonObject JSON = new JsonObject();
+//
+//        List<Person> persons = facade.getPersons();
+//
         Person person = facade.getPersonByPhone(phone);
+//
+//        List<Phone> phones = person.getPhone();
+//
+//        for (Phone phone1 : phones) {
+//
+//            if (phone1.getNumber() == phone) {
+//
+//                List<Hobby> hobbies = person.getHobies();
+//
+//                for (Hobby hobby : hobbies) {
+//                    JsonObject nameHobby = new JsonObject();
+//                    JsonObject descriptionHobby = new JsonObject();
+//
+//                    nameHobby.addProperty("name", hobby.getName());
+//                    descriptionHobby.addProperty("description", hobby.getDescription());
+//
+//                    datasetsHobies.add(nameHobby);
+//                    datasetsHobies.add(descriptionHobby);
+//                }
+//
+//                for (Phone phonePerson : phones) {
+//                    JsonObject phoneNumber = new JsonObject();
+//                    JsonObject phoneDescription = new JsonObject();
+//
+//                    phoneNumber.addProperty("number", phonePerson.getNumber());
+//                    phoneDescription.addProperty("description", phonePerson.getDescription());
+//
+//                    datasetsPhones.add(phoneNumber);
+//                    datasetsPhones.add(phoneDescription);
+//                }
+//                JsonObject street = new JsonObject();
+//                JsonObject city = new JsonObject();
+//                JsonObject zip = new JsonObject();
+//                JsonObject additionalInfo = new JsonObject();
+//
+//                street.addProperty("street", person.getAddress().getStreet());
+//                city.addProperty("city", person.getAddress().getCityInfo().getCity());
+//                zip.addProperty("zip", person.getAddress().getCityInfo().getZip());
+//                additionalInfo.addProperty("additional info", person.getAddress().getAdditionalInfo());
+//
+//                datasetsAddress.add(street);
+//                datasetsAddress.add(city);
+//                datasetsAddress.add(zip);
+//                datasetsAddress.add(additionalInfo);
+//
+//                JSON.addProperty("firstName", person.getFirstName());
+//                JSON.addProperty("lastName", person.getLastName());
+//                JSON.addProperty("mail", person.getMail());
+//
+//            }
+//        }
+//
+//        JSON.add("hobbies", datasetsHobies);
+//        JSON.add("phone", datasetsPhones);
+//        JSON.add("address", datasetsAddress);
 
-        List<Phone> phones = person.getPhone();
+        return gson.toJson(new PersonMapper(person));
+    }
 
-        for (Phone phone1 : phones) {
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("persona/{id}")
+    public String getPersonFromId(@PathParam("id") int id) {
 
-            if (phone1.getNumber() == phone) {
+        
 
-                List<Hobby> hobbies = person.getHobies();
-
-                for (Hobby hobby : hobbies) {
-                    JsonObject nameHobby = new JsonObject();
-                    JsonObject descriptionHobby = new JsonObject();
-
-                    nameHobby.addProperty("name", hobby.getName());
-                    descriptionHobby.addProperty("description", hobby.getDescription());
-
-                    datasetsHobies.add(nameHobby);
-                    datasetsHobies.add(descriptionHobby);
-                }
-
-                for (Phone phonePerson : phones) {
-                    JsonObject phoneNumber = new JsonObject();
-                    JsonObject phoneDescription = new JsonObject();
-
-                    phoneNumber.addProperty("number", phonePerson.getNumber());
-                    phoneDescription.addProperty("description", phonePerson.getDescription());
-
-                    datasetsPhones.add(phoneNumber);
-                    datasetsPhones.add(phoneDescription);
-                }
-                JsonObject street = new JsonObject();
-                JsonObject city = new JsonObject();
-                JsonObject zip = new JsonObject();
-                JsonObject additionalInfo = new JsonObject();
-
-                street.addProperty("street", person.getAddress().getStreet());
-                city.addProperty("city", person.getAddress().getCityInfo().getCity());
-                zip.addProperty("zip", person.getAddress().getCityInfo().getZip());
-                additionalInfo.addProperty("additional info", person.getAddress().getAdditionalInfo());
-
-                datasetsAddress.add(street);
-                datasetsAddress.add(city);
-                datasetsAddress.add(zip);
-                datasetsAddress.add(additionalInfo);
-
-                JSON.addProperty("firstName", person.getFirstName());
-                JSON.addProperty("lastName", person.getLastName());
-                JSON.addProperty("mail", person.getMail());
-
-            }
-        }
-
-        JSON.add("hobbies", datasetsHobies);
-        JSON.add("phone", datasetsPhones);
-        JSON.add("address", datasetsAddress);
-
-        return JSON.toString();
+        Person person = facade.getPerson(id);
+        
+        PersonMapper pm = new PersonMapper(person);
+        
+        return gson.toJson(pm);
     }
 
     /**
@@ -137,88 +156,13 @@ public class InfoREST {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("persons/{hobby}")
     public String getPersons(@PathParam("hobby") String hobby) {
-        JsonArray datasetsHobies = new JsonArray();
-        JsonArray datasetsPhones = new JsonArray();
-        JsonArray datasetsAddress = new JsonArray();
-        JsonArray datasetsContainer = new JsonArray();
-
-        JsonObject JSON = new JsonObject();
-
         List<Person> persons = facade.getPersonsFromHobby(hobby);
-
+        List<PersonMapper> personMapperList = new ArrayList<>();
         for (Person person : persons) {
-
-            List<Phone> phones = person.getPhone();
-
-            for (Phone phone1 : phones) {
-
-                List<Hobby> hobbies = person.getHobies();
-
-                for (Hobby hobbyE : hobbies) {
-                    JsonObject nameHobby = new JsonObject();
-                    JsonObject descriptionHobby = new JsonObject();
-
-                    nameHobby.addProperty("name", hobbyE.getName());
-                    descriptionHobby.addProperty("description", hobbyE.getDescription());
-
-                    datasetsHobies.add(nameHobby);
-                    datasetsHobies.add(descriptionHobby);
-                }
-
-                for (Phone phonePerson : phones) {
-                    JsonObject phoneNumber = new JsonObject();
-                    JsonObject phoneDescription = new JsonObject();
-
-                    phoneNumber.addProperty("number", phonePerson.getNumber());
-                    phoneDescription.addProperty("description", phonePerson.getDescription());
-
-                    datasetsPhones.add(phoneNumber);
-                    datasetsPhones.add(phoneDescription);
-                }
-                JsonObject street = new JsonObject();
-                JsonObject city = new JsonObject();
-                JsonObject zip = new JsonObject();
-                JsonObject additionalInfo = new JsonObject();
-
-                street.addProperty("street", person.getAddress().getStreet());
-                city.addProperty("city", person.getAddress().getCityInfo().getCity());
-                zip.addProperty("zip", person.getAddress().getCityInfo().getZip());
-                additionalInfo.addProperty("additional info", person.getAddress().getAdditionalInfo());
-
-                datasetsAddress.add(street);
-                datasetsAddress.add(city);
-                datasetsAddress.add(zip);
-                datasetsAddress.add(additionalInfo);
-                
-                JsonObject firstName = new JsonObject();
-                JsonObject lastName = new JsonObject();
-                JsonObject mail = new JsonObject();
-
-                firstName.addProperty("firstName", person.getFirstName());
-                lastName.addProperty("lastName", person.getLastName());
-                mail.addProperty("mail", person.getMail());
-                
-                datasetsContainer.add(firstName);
-                datasetsContainer.add(lastName);
-                datasetsContainer.add(mail);
-                
-                JsonObject hobbiesJsonObject = new JsonObject();
-                JsonObject phonesJsonObject = new JsonObject();
-                JsonObject addressesJsonObject = new JsonObject();
-                
-                hobbiesJsonObject.add("hobbies", datasetsHobies);
-                phonesJsonObject.add("phone", datasetsPhones);
-                addressesJsonObject.add("address", datasetsAddress);
-                
-                datasetsContainer.add(hobbiesJsonObject);
-                datasetsContainer.add(phonesJsonObject);
-                datasetsContainer.add(addressesJsonObject);
-            }
-            
-            JSON.add(""+person.getFirstName()+"",datasetsContainer);
+            personMapperList.add(new PersonMapper(person));
         }
 
-        return JSON.toString();
+        return gson.toJson(personMapperList);
     }
 
     @GET
@@ -257,14 +201,12 @@ public class InfoREST {
 
         return JSON.toString();
     }
-    
-    
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    public void postJson(String content) {
-        
-    }
 
+//    @POST
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    public void postJson(String content) {
+//        Person p = new Gson().fromJson(content, Person.class);
+//    }
     /**
      * PUT method for updating or creating an instance of InfoREST
      *

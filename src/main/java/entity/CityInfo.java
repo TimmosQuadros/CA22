@@ -13,12 +13,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
  * @author TimmosQuadros
  */
 @Entity
+@XmlRootElement
 public class CityInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -56,6 +59,7 @@ public class CityInfo implements Serializable {
         this.city = city;
     }
 
+    @XmlTransient
     public List<Address> getAddresses() {
         return addresses;
     }

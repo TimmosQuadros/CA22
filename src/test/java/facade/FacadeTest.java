@@ -96,14 +96,14 @@ public class FacadeTest {
 //        assertEquals(p.get(0).getFirstName(),"Per");
 //    }
     
-    @Test
-    public void postPerson(){
-        CityInfo cityinfo = fp.getCityInfoByCity("Hellerup");
-        assertEquals(cityinfo.getZip(), "2900");
-        Address adr = new Address("Mariegade 26", "Rich city", fp.getCityInfoByCity("Hellerup"));
-        InfoEntity infoE = new InfoEntity("newPerson@gmail.com", adr);
-        
-    }
+//    @Test
+//    public void postPerson(){
+//        CityInfo cityinfo = fp.getCityInfoByCity("Hellerup");
+//        assertEquals(cityinfo.getZip(), "2900");
+//        Address adr = new Address("Mariegade 26", "Rich city", fp.getCityInfoByCity("Hellerup"));
+//        InfoEntity infoE = new InfoEntity("newPerson@gmail.com", adr);
+//        
+//    }
     
     
 }

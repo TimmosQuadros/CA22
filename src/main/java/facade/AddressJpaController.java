@@ -203,14 +203,15 @@ public class AddressJpaController implements Serializable {
         }
     }
     
-    public Address findPersonByAddress(Address adr) {
+    public Address findAddressByAddress(Address adr) {
         EntityManager em = getEntityManager();
         String city = adr.getCityInfo().getCity();
         String zip = adr.getCityInfo().getZip();
+        String street = adr.getStreet();
         try
         {
             em.getTransaction().begin();
-            Long result = (Long)em.createQuery("SELECT a.id FROM Address a WHERE a.cityInfo.city='"+city+"'"+" and a.cityInfo.zip").getSingleResult();
+            Long result = (Long)em.createQuery("SELECT a.id FROM Address a WHERE a.cityInfo.city='"+city+"'"+" and a.cityInfo.zip='"+zip+"'" +" and a.street='"+street+"'").getSingleResult();
             em.getTransaction().commit();
             return findAddress(result);
         }
