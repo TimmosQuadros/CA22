@@ -5,17 +5,29 @@
  */
 package jsonmappers;
 
+import entity.Company;
+
 /**
  *
  * @author TimmosQuadros
  */
 public class CompanyMapper {
     
+    private long id;
     private String name;
     private String description;
     private int cvr;
     private int numEmployees;
     private double marketValue;
+
+    public CompanyMapper(Company company) {
+        id = company.getId();
+        name = company.getName();
+        description = company.getDescription();
+        cvr = company.getCvr();
+        numEmployees = company.getNumEmployees();
+        marketValue = company.getMarketValue();
+    }
     
     
 }

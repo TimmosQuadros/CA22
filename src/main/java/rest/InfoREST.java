@@ -5,6 +5,7 @@
  */
 package rest;
 
+import RESTException.PersonNotFoundException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -30,6 +31,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import jsonmappers.CompanyMapper;
 import jsonmappers.PersonMapper;
 import utility.JSONConverter;
 
@@ -38,7 +40,7 @@ import utility.JSONConverter;
  *
  * @author TimmosQuadros
  */
-@Path("info")
+@Path("person")
 public class InfoREST {
 
     @Context
@@ -64,86 +66,36 @@ public class InfoREST {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("person/{phone}")
-    public String getPerson(@PathParam("phone") int phone) {
-//        JsonArray datasetsHobies = new JsonArray();
-//        JsonArray datasetsPhones = new JsonArray();
-//        JsonArray datasetsAddress = new JsonArray();
-//
-//        JsonObject JSON = new JsonObject();
-//
-//        List<Person> persons = facade.getPersons();
-//
-        Person person = facade.getPersonByPhone(phone);
-//
-//        List<Phone> phones = person.getPhone();
-//
-//        for (Phone phone1 : phones) {
-//
-//            if (phone1.getNumber() == phone) {
-//
-//                List<Hobby> hobbies = person.getHobies();
-//
-//                for (Hobby hobby : hobbies) {
-//                    JsonObject nameHobby = new JsonObject();
-//                    JsonObject descriptionHobby = new JsonObject();
-//
-//                    nameHobby.addProperty("name", hobby.getName());
-//                    descriptionHobby.addProperty("description", hobby.getDescription());
-//
-//                    datasetsHobies.add(nameHobby);
-//                    datasetsHobies.add(descriptionHobby);
-//                }
-//
-//                for (Phone phonePerson : phones) {
-//                    JsonObject phoneNumber = new JsonObject();
-//                    JsonObject phoneDescription = new JsonObject();
-//
-//                    phoneNumber.addProperty("number", phonePerson.getNumber());
-//                    phoneDescription.addProperty("description", phonePerson.getDescription());
-//
-//                    datasetsPhones.add(phoneNumber);
-//                    datasetsPhones.add(phoneDescription);
-//                }
-//                JsonObject street = new JsonObject();
-//                JsonObject city = new JsonObject();
-//                JsonObject zip = new JsonObject();
-//                JsonObject additionalInfo = new JsonObject();
-//
-//                street.addProperty("street", person.getAddress().getStreet());
-//                city.addProperty("city", person.getAddress().getCityInfo().getCity());
-//                zip.addProperty("zip", person.getAddress().getCityInfo().getZip());
-//                additionalInfo.addProperty("additional info", person.getAddress().getAdditionalInfo());
-//
-//                datasetsAddress.add(street);
-//                datasetsAddress.add(city);
-//                datasetsAddress.add(zip);
-//                datasetsAddress.add(additionalInfo);
-//
-//                JSON.addProperty("firstName", person.getFirstName());
-//                JSON.addProperty("lastName", person.getLastName());
-//                JSON.addProperty("mail", person.getMail());
-//
-//            }
-//        }
-//
-//        JSON.add("hobbies", datasetsHobies);
-//        JSON.add("phone", datasetsPhones);
-//        JSON.add("address", datasetsAddress);
+    public String getPerson(@PathParam("phone") int phone) throws PersonNotFoundException {
+        Person person = null;
+        try {
+            person = facade.getPersonByPhone(phone);
+        } catch (Exception e) {
+        }
+
+        if (person == null) {
+            throw new PersonNotFoundException("No person exists with that phone number");
+        }
 
         return gson.toJson(new PersonMapper(person));
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("persona/{id}")
-    public String getPersonFromId(@PathParam("id") int id) {
+    @Path("complete/{id}")
+    public String getPersonFromId(@PathParam("id") int id) throws PersonNotFoundException {
+        PersonMapper pm = null;
+        Person person = null;
+        try {
+            person = facade.getPerson(id);
+            pm = new PersonMapper(person);
+        } catch (Exception e) {
+        }
 
-        
+        if (person == null) {
+            throw new PersonNotFoundException("No person exists with that id");
+        }
 
-        Person person = facade.getPerson(id);
-        
-        PersonMapper pm = new PersonMapper(person);
-        
         return gson.toJson(pm);
     }
 
@@ -155,11 +107,21 @@ public class InfoREST {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("persons/{hobby}")
-    public String getPersons(@PathParam("hobby") String hobby) {
-        List<Person> persons = facade.getPersonsFromHobby(hobby);
+    public String getPersons(@PathParam("hobby") String hobby) throws PersonNotFoundException {
+        List<Person> persons = new ArrayList<>();
         List<PersonMapper> personMapperList = new ArrayList<>();
-        for (Person person : persons) {
-            personMapperList.add(new PersonMapper(person));
+        try {
+            persons = facade.getPersonsFromHobby(hobby);
+            personMapperList = new ArrayList<>();
+            for (Person person : persons) {
+                personMapperList.add(new PersonMapper(person));
+            }
+
+        } catch (Exception e) {
+        }
+
+        if (persons.isEmpty()) {
+            throw new PersonNotFoundException("No person exists with that hobby");
         }
 
         return gson.toJson(personMapperList);
@@ -169,37 +131,9 @@ public class InfoREST {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("company/{phone}")
     public String getCompany(@PathParam("phone") int phone) {
-        JsonArray datasetsPhones = new JsonArray();
-        JsonObject JSON = new JsonObject();
-
         Company company = facade.getCompanyByPhone(phone);
 
-        List<Phone> phones = company.getPhone();
-
-        for (Phone phonePerson : phones) {
-            JsonObject phoneNumber = new JsonObject();
-            JsonObject phoneDescription = new JsonObject();
-
-            phoneNumber.addProperty("number", phonePerson.getNumber());
-            phoneDescription.addProperty("description", phonePerson.getDescription());
-
-            datasetsPhones.add(phoneNumber);
-            datasetsPhones.add(phoneDescription);
-        }
-
-        JSON.addProperty("cvr", company.getCvr());
-        JSON.addProperty("description", company.getDescription());
-        JSON.addProperty("marketvalue", company.getMarketValue());
-        JSON.addProperty("name", company.getName());
-        JSON.addProperty("numEmployees", company.getNumEmployees());
-        JSON.add("phones", datasetsPhones);
-        JSON.addProperty("email", company.getMail());
-        JSON.addProperty("street", company.getAddress().getStreet());
-        JSON.addProperty("city", company.getAddress().getCityInfo().getCity());
-        JSON.addProperty("zip", company.getAddress().getCityInfo().getZip());
-        JSON.addProperty("addressInfo", company.getAddress().getAdditionalInfo());
-
-        return JSON.toString();
+        return gson.toJson(new CompanyMapper(company));
     }
 
 //    @POST
