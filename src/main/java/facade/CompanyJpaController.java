@@ -34,7 +34,7 @@ public class CompanyJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(Company company) {
+    public Company create(Company company) {
         if (company.getPhone() == null) {
             company.setPhone(new ArrayList<Phone>());
         }
@@ -73,6 +73,16 @@ public class CompanyJpaController implements Serializable {
                 em.close();
             }
         }
+        return company;
+    }
+    
+    // PeterBoss
+    public void edit(Company company) {
+        EntityManager em = getEntityManager();
+            em.getTransaction().begin();
+            em.merge(company);
+            em.getTransaction().commit();
+            em.close();
     }
 
     public void destroy(Long id) throws NonexistentEntityException {

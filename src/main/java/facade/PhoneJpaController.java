@@ -152,6 +152,22 @@ public class PhoneJpaController implements Serializable {
             em.close();
         }
     }
+    
+    public Phone findPhoneByPhoneNumber(int phonenumber) {
+        EntityManager em = getEntityManager();
+        
+        try
+        {
+            em.getTransaction().begin();
+            Long result = (Long)em.createQuery("SELECT p.id FROM Phone p WHERE p.number="+phonenumber).getSingleResult();
+            em.getTransaction().commit();
+            return findPhone(result);
+        }
+        finally
+        {
+            em.close();
+        }
+    }
 
     public int getPhoneCount() {
         EntityManager em = getEntityManager();

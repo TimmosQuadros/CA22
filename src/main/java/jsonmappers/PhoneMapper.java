@@ -6,6 +6,7 @@
 package jsonmappers;
 
 import entity.Phone;
+import java.util.List;
 
 /**
  *
@@ -36,6 +37,8 @@ public class PhoneMapper {
     public void setDescription(String description) {
         this.description = description;
     }
+    
+    
     
     
     

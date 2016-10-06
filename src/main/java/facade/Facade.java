@@ -53,8 +53,8 @@ public class Facade {
         cijpa.create(cityinfo);
     }
 
-    public void createCompany(Company company) throws Exception {
-        cojpa.create(company);
+    public Company createCompany(Company company) throws Exception {
+        return cojpa.create(company);
     }
 
     public void createHobby(Hobby hobby) throws Exception {
@@ -105,6 +105,10 @@ public class Facade {
     //Retreive specific
     public Person getPersonByPhone(int phonenumber) {
         return pejpa.findPersonByPhone(phonenumber);
+    }
+    
+    public Phone getPhoneByPhoneNumber(int phonenumber){
+        return phjpa.findPhoneByPhoneNumber(phonenumber);
     }
 
     public List<Person> getPersonsFromHobby(String hobbyName) {
@@ -162,7 +166,7 @@ public class Facade {
     }
 
     public void editCompany(Company company) throws Exception {
-        //Not Implemented
+        cojpa.edit(company);
     }
 
     public void editHobby(Hobby hobby) throws Exception {
@@ -174,7 +178,7 @@ public class Facade {
     }
 
     public void editPerson(Person person) {
-        //Not Implemented
+        pejpa.edit(person);
     }
 
     public void editPhone(Phone phone) throws Exception {

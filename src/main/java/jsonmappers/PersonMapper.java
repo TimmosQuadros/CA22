@@ -17,25 +17,21 @@ import java.util.List;
  */
 public class PersonMapper {
     
+    private long id;
     private String firstname;
     private String lastname;
     private String email;
     private List<PhoneMapper> phones;
-    private String street;
-    private String additionalInfo;
-    private String zipcode;
-    private String city;
+    private AddressMapper address;
     private List<HobbyMapper> hobbies;
     
     public PersonMapper(Person p) {
+        id = p.getId();
         firstname = p.getFirstName();
         lastname = p.getLastName();
         email = p.getMail();
         phones = phonesToStringList(p.getPhone());
-        street = p.getAddress().getStreet();
-        additionalInfo = p.getAddress().getAdditionalInfo();
-        zipcode = p.getAddress().getCityInfo().getZip();
-        city = p.getAddress().getCityInfo().getCity();
+        address = new AddressMapper(p.getAddress());
         hobbies = hobbiesToStringList(p.getHobies());
     }
     
@@ -58,6 +54,14 @@ public class PersonMapper {
             list.add(new HobbyMapper(hobby));
         }
         return list;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getFirstname() {
@@ -92,38 +96,6 @@ public class PersonMapper {
         this.phones = phones;
     }
 
-    public String getStreet() {
-        return street;
-    }
-
-    public void setStreet(String street) {
-        this.street = street;
-    }
-
-    public String getAdditionalInfo() {
-        return additionalInfo;
-    }
-
-    public void setAdditionalInfo(String additionalInfo) {
-        this.additionalInfo = additionalInfo;
-    }
-
-    public String getZipcode() {
-        return zipcode;
-    }
-
-    public void setZipcode(String zipcode) {
-        this.zipcode = zipcode;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
     public List<HobbyMapper> getHobbies() {
         return hobbies;
     }
@@ -131,6 +103,12 @@ public class PersonMapper {
     public void setHobbies(List<HobbyMapper> hobbies) {
         this.hobbies = hobbies;
     }
-    
-    
+
+    public AddressMapper getAddress() {
+        return address;
+    }
+
+    public void setAddress(AddressMapper address) {
+        this.address = address;
+    }
 }
