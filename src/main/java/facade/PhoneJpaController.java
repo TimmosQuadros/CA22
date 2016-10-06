@@ -32,7 +32,7 @@ public class PhoneJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(Phone phone) {
+    public Phone create(Phone phone) {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -53,6 +53,7 @@ public class PhoneJpaController implements Serializable {
                 em.close();
             }
         }
+        return phone;
     }
 
     public void edit(Phone phone) throws NonexistentEntityException, Exception {

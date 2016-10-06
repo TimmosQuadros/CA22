@@ -56,14 +56,17 @@ public class InfoEntity implements Serializable {
     public void setMail(String mail) {
         this.mail = mail;
     }
-
-    @XmlTransient
+    
     public List<Phone> getPhone() {
         return phone;
     }
 
     public void setPhone(List<Phone> phone) {
         this.phone = phone;
+    }
+    
+    public void addPhone(Phone p){
+        phone.add(p);
     }
 
     public Address getAddress() {

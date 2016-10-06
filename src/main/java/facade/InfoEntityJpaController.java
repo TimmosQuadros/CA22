@@ -34,7 +34,7 @@ public class InfoEntityJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(InfoEntity infoEntity) {
+    public InfoEntity create(InfoEntity infoEntity) {
         if (infoEntity.getPhone() == null) {
             infoEntity.setPhone(new ArrayList<Phone>());
         }
@@ -73,6 +73,7 @@ public class InfoEntityJpaController implements Serializable {
                 em.close();
             }
         }
+        return infoEntity;
     }
 
     public void edit(InfoEntity infoEntity) throws NonexistentEntityException, Exception {

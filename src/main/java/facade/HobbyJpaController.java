@@ -164,6 +164,22 @@ public class HobbyJpaController implements Serializable {
         }
     }
     
+    public Hobby findHobbyByName(String hobbyName){
+        EntityManager em = getEntityManager();
+        
+        try
+        {
+            em.getTransaction().begin();
+            Long result = (Long)em.createQuery("SELECT h.id from Hobby h where h.name='"+hobbyName+"'").getSingleResult();
+            em.getTransaction().commit();
+            return findHobby(result);
+        }
+        finally
+        {
+            em.close();
+        }
+    }
+    
     public List<Person> findPersonsByHobby(String hobbyName) {
         EntityManager em = getEntityManager();
         

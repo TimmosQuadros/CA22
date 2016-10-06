@@ -11,6 +11,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import entity.Address;
 import entity.Company;
 import entity.Hobby;
 import entity.InfoEntity;
@@ -19,6 +20,8 @@ import entity.Phone;
 import facade.Facade;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.ws.rs.core.Context;
@@ -32,7 +35,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import jsonmappers.CompanyMapper;
+import jsonmappers.HobbyMapper;
 import jsonmappers.PersonMapper;
+import jsonmappers.PhoneMapper;
 import utility.JSONConverter;
 
 /**
@@ -123,8 +128,7 @@ public class InfoREST {
         if (persons.isEmpty()) {
             throw new PersonNotFoundException("No person exists with that hobby");
         }
-
-        return gson.toJson(personMapperList);
+        return "{"+gson.toJson(personMapperList)+"}";
     }
 
     @GET
@@ -136,11 +140,32 @@ public class InfoREST {
         return gson.toJson(new CompanyMapper(company));
     }
 
-//    @POST
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    public void postJson(String content) {
-//        Person p = new Gson().fromJson(content, Person.class);
-//    }
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String postJson(String content) throws Exception {
+        PersonMapper pm = gson.fromJson(content, PersonMapper.class);
+        Address address = new Address(pm.getStreet(),pm.getAdditionalInfo(),facade.getCityInfoByCity(pm.getCity()));
+        Address JPACreatedAddress = facade.createAddress(address);
+        
+        InfoEntity infoentity = new InfoEntity(pm.getEmail(), JPACreatedAddress);
+        //InfoEntity JPACreatedInfoEntity = facade.createInfoEntity(infoentity);
+        
+        
+        Person p = new Person(pm.getFirstname(), pm.getLastname(), pm.getEmail(), JPACreatedAddress);
+        Person JPACreatedPerson = facade.createPerson(p);
+        
+        
+        
+        addPhone(pm.getPhones(), JPACreatedPerson);
+        addHobby(pm.getHobbies(), JPACreatedPerson);
+        
+        facade.editPerson(JPACreatedPerson);
+        
+        Person consistentPerson = facade.getPerson(JPACreatedPerson.getId());
+        
+        return gson.toJson(new PersonMapper(consistentPerson));
+    }
     /**
      * PUT method for updating or creating an instance of InfoREST
      *
@@ -149,5 +174,42 @@ public class InfoREST {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     public void putJson(String content) {
+    }
+    
+    
+    private void addHobby(List<HobbyMapper> hobbyMappers,Person person) throws PersonNotFoundException, Exception{
+        Hobby hobbyAlreadyExists=null;
+        for (HobbyMapper hobbyMapper : hobbyMappers) {
+            try {
+                hobbyAlreadyExists=facade.getHobbyFromName(hobbyMapper.getName());
+            } catch (Exception e) {
+                
+            }
+            if(hobbyAlreadyExists==null){ //That is the hobby doesn't already exists
+                Hobby hobby = new Hobby(hobbyMapper.getName(), hobbyMapper.getDescription(), new ArrayList<Person>()); //the list of persons belonging to this hobby is empty since it is a new hobby...
+                facade.createHobby(hobby);
+                person.addHobby(hobby);
+                hobby.addPerson(person);
+                facade.editHobby(hobby);
+            }else{
+                person.addHobby(hobbyAlreadyExists); //Update the list of hobbies on the person edit person when return
+                hobbyAlreadyExists.addPerson(person); //Update the list of persons attached to hobby
+                facade.editHobby(hobbyAlreadyExists);   //
+                hobbyAlreadyExists=null;
+            }
+        }
+    }
+    
+    private List<Phone> addPhone(List<PhoneMapper> phoneMappers,InfoEntity infoEntity) throws PersonNotFoundException{
+        List<Phone> phones = new ArrayList<>();
+        for (PhoneMapper phoneMapper : phoneMappers) {
+            try {
+                Phone JPACreatedPhone = facade.createPhone(new Phone(phoneMapper.getNumber(), phoneMapper.getDescription(), infoEntity));
+                infoEntity.addPhone(JPACreatedPhone);
+            } catch (Exception ex) {
+                throw new PersonNotFoundException("couldn't create phone");
+            }
+        }
+        return phones;
     }
 }

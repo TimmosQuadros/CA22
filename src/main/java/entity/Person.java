@@ -61,14 +61,17 @@ public class Person extends InfoEntity implements Serializable {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-
-    @XmlTransient
+    
     public List<Hobby> getHobies() {
         return hobies;
     }
 
     public void setHobies(List<Hobby> hobies) {
         this.hobies = hobies;
+    }
+    
+    public void addHobby(Hobby h){
+        hobies.add(h);
     }
     
 }

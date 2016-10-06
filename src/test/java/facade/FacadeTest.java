@@ -47,54 +47,54 @@ public class FacadeTest {
     public void tearDown() {
     }
 
-//    @Test
-//    public void getPerson() {
-//        Person p = fp.getPerson(1);
-//        
-//        assertEquals(p.getFirstName(), "Per");
-//    }
-//    
-//    @Test
-//    public void getPersons() {
-//        List<Person> persons = fp.getPersons();
-//        
-//        assertTrue(persons.size()>0);
-//        assertTrue(persons.get(0).getFirstName()!=null);
-//    }
-//    
-//    @Test
-//    public void getAddress() {
-//        Person p = fp.getPerson(1);
-//        String test = p.getAddress().getStreet();
-//        
-//        assertEquals(test, "Parken 14");
-//    }
-//    
-//    @Test
-//    public void getHobbies(){
-//        Person p = fp.getPerson(1);
-//        String test = p.getHobies().get(0).getName();
-//        assertEquals(test, "Tennis");
-//    }
-//    
-//    @Test
-//    public void getPhone(){
-//        Person p = fp.getPerson(1);
-//        int test = p.getPhone().get(0).getNumber();
-//        assertEquals(test,21232344);
-//    }
+    @Test
+    public void getPerson() {
+        Person p = fp.getPerson(1);
+        
+        assertEquals(p.getFirstName(), "Per");
+    }
     
-//    @Test
-//    public void getPersonFromPhone(){
-//        Person p = fp.getPersonByPhone(21232344);
-//        assertEquals(p.getFirstName(), "Per");
-//    }
+    @Test
+    public void getPersons() {
+        List<Person> persons = fp.getPersons();
+        
+        assertTrue(persons.size()>0);
+        assertTrue(persons.get(0).getFirstName()!=null);
+    }
     
-//    @Test
-//    public void getPersonsFromHobby(){
-//        List<Person> p = fp.getPersonsFromHobby("Tennis");
-//        assertEquals(p.get(0).getFirstName(),"Per");
-//    }
+    @Test
+    public void getAddress() {
+        Person p = fp.getPerson(1);
+        String test = p.getAddress().getStreet();
+        
+        assertEquals(test, "Parken 14");
+    }
+    
+    @Test
+    public void getHobbies(){
+        Person p = fp.getPerson(1);
+        String test = p.getHobies().get(0).getName();
+        assertEquals(test, "Tennis");
+    }
+    
+    @Test
+    public void getPhone(){
+        Person p = fp.getPerson(1);
+        int test = p.getPhone().get(0).getNumber();
+        assertEquals(test,21232344);
+    }
+    
+    @Test
+    public void getPersonFromPhone(){
+        Person p = fp.getPersonByPhone(21232344);
+        assertEquals(p.getFirstName(), "Per");
+    }
+    
+    @Test
+    public void getPersonsFromHobby(){
+        List<Person> p = fp.getPersonsFromHobby("Tennis");
+        assertEquals(p.get(0).getFirstName(),"Per");
+    }
     
 //    @Test
 //    public void postPerson(){

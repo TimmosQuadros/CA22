@@ -36,7 +36,7 @@ public class PersonJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(Person person) {
+    public Person create(Person person) {
         if (person.getHobies() == null) {
             person.setHobies(new ArrayList<Hobby>());
         }
@@ -88,6 +88,7 @@ public class PersonJpaController implements Serializable {
                 em.close();
             }
         }
+        return person;
     }
 
     public void destroy(Long id) throws NonexistentEntityException {

@@ -45,8 +45,8 @@ public class Facade {
     }
 
     //Create
-    public void createAddress(Address address) throws Exception {
-        ajpa.create(address);
+    public Address createAddress(Address address) throws Exception {
+        return ajpa.create(address);
     }
 
     public void createCityInfo(CityInfo cityinfo) throws Exception {
@@ -61,16 +61,16 @@ public class Facade {
         hjpa.create(hobby);
     }
 
-    public void createInfoEntity(InfoEntity infoentity) throws Exception {
-        ijpa.create(infoentity);
+    public InfoEntity createInfoEntity(InfoEntity infoentity) throws Exception {
+        return ijpa.create(infoentity);
     }
 
-    public void createPerson(Person person) throws Exception {
-        pejpa.create(person);
+    public Person createPerson(Person person) throws Exception {
+        return pejpa.create(person);
     }
 
-    public void createPhone(Phone phone) throws Exception {
-        phjpa.create(phone);
+    public Phone createPhone(Phone phone) throws Exception {
+        return phjpa.create(phone);
     }
 
     //Retreive
@@ -101,21 +101,25 @@ public class Facade {
     public Phone getPhone(long id) {
         return phjpa.findPhone(id);
     }
-    
+
     //Retreive specific
-    public Person getPersonByPhone(int phonenumber){
+    public Person getPersonByPhone(int phonenumber) {
         return pejpa.findPersonByPhone(phonenumber);
     }
-    
-    public List<Person> getPersonsFromHobby(String hobbyName){
+
+    public List<Person> getPersonsFromHobby(String hobbyName) {
         return hjpa.findPersonsByHobby(hobbyName);
     }
     
-    public Company getCompanyByPhone(int phonenumber){
+    public Hobby getHobbyFromName(String hobbyName){
+        return hjpa.findHobbyByName(hobbyName);
+    }
+
+    public Company getCompanyByPhone(int phonenumber) {
         return cojpa.findCompanyByPhone(phonenumber);
     }
-    
-    public CityInfo getCityInfoByCity(String city){
+
+    public CityInfo getCityInfoByCity(String city) {
         return cijpa.findCityInfo(city);
     }
 
@@ -147,64 +151,63 @@ public class Facade {
     public List<Phone> getPhones() {
         return phjpa.findPhoneEntities();
     }
-    
+
     //Update
-    public void editAddress(Address address) throws Exception{
+    public void editAddress(Address address) throws Exception {
         ajpa.edit(address);
     }
-    
-    public void editCityInfos(CityInfo cityinfo) throws Exception{
+
+    public void editCityInfos(CityInfo cityinfo) throws Exception {
         cijpa.edit(cityinfo);
     }
-    
-    public void editCompany(Company company) throws Exception{
+
+    public void editCompany(Company company) throws Exception {
         //Not Implemented
     }
-    
-    public void editHobby(Hobby hobby) throws Exception{
+
+    public void editHobby(Hobby hobby) throws Exception {
         hjpa.edit(hobby);
     }
 
-    public void editInfoEntity(InfoEntity infoentity) throws Exception{
+    public void editInfoEntity(InfoEntity infoentity) throws Exception {
         ijpa.edit(infoentity);
     }
-    
-    public void editPerson(Person person){
+
+    public void editPerson(Person person) {
         //Not Implemented
     }
-    
-    public void editPhone(Phone phone) throws Exception{
+
+    public void editPhone(Phone phone) throws Exception {
         phjpa.edit(phone);
     }
-    
+
     //Delete
-    public void deleteAddress(long id) throws IllegalOrphanException, NonexistentEntityException{
+    public void deleteAddress(long id) throws IllegalOrphanException, NonexistentEntityException {
         ajpa.destroy(id);
     }
-    
-    public void deleteCityInfo(long id) throws NonexistentEntityException{
+
+    public void deleteCityInfo(long id) throws NonexistentEntityException {
         cijpa.destroy(id);
     }
-    
+
     public void deleteCompany(long id) throws IllegalOrphanException, NonexistentEntityException {
         cojpa.destroy(id);
     }
-    
+
     public void deleteHobby(long id) throws NonexistentEntityException {
         hjpa.destroy(id);
     }
-    
+
     public void deleteInfoentity(long id) throws IllegalOrphanException, NonexistentEntityException {
         ijpa.destroy(id);
     }
-    
+
     public void deletePerson(long id) throws IllegalOrphanException, NonexistentEntityException {
         pejpa.destroy(id);
     }
-    
+
     public void deletePhone(long id) throws NonexistentEntityException {
         phjpa.destroy(id);
     }
-    
 
 }

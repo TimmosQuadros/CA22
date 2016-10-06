@@ -34,6 +34,8 @@ public class Phone implements Serializable {
 
     public Phone() {
     }
+    
+    
 
     public Phone(int number, String description, InfoEntity infoEntity) {
         this.number = number;

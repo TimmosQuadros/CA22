@@ -34,7 +34,7 @@ public class AddressJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(Address address) {
+    public Address create(Address address) {
         if (address.getInfoentities() == null) {
             address.setInfoentities(new ArrayList<InfoEntity>());
         }
@@ -73,6 +73,7 @@ public class AddressJpaController implements Serializable {
                 em.close();
             }
         }
+        return address;
     }
 
     public void edit(Address address) throws NonexistentEntityException, Exception {
