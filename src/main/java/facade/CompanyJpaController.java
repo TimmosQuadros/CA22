@@ -34,6 +34,11 @@ public class CompanyJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
+    /**
+     * This method creates a company with JPA in the db.
+     * @param company
+     * @return 
+     */
     public Company create(Company company) {
         if (company.getPhone() == null) {
             company.setPhone(new ArrayList<Phone>());
