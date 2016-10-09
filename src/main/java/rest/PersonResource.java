@@ -67,7 +67,7 @@ public class PersonResource {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("person/{phone}")
+    @Path("phone/{phone}")
     public String getPerson(@PathParam("phone") int phone) throws PersonNotFoundException {
         Person person = null;
         try {
@@ -122,6 +122,18 @@ public class PersonResource {
             personMapperList.add(new PersonMapper(person));
         }
         return "{\"persons\":" + gson.toJson(personMapperList) + "}";
+    }
+    
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("contactinfo/hobby/{hobby}")
+    public String getAllPersonsWithHobby(@PathParam("hobby") String hobby) {
+        List<PersonMapper1> personMapperList1 = new ArrayList<>();
+        List<Person> persons = facade.getPersonsFromHobby(hobby);
+        for (Person person : persons) {
+            personMapperList1.add(new PersonMapper1(person));
+        }
+        return "{\"persons\":" + gson.toJson(personMapperList1) + "}";
     }
 
     /**

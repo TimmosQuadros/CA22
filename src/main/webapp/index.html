@@ -3,8 +3,170 @@
     <head>
         <title>Start Page</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+        
+        <script>
+        $(document).ready(function (){
+                $("#searchHobbyButton").click(function ()
+                {
+                    ReloadData();
+                });
+            
+                $("#searchPhoneButton").click(function ()
+                {
+                    FindPersonByPhone($("#findPersonByPhone").val());
+                });
+                
+                $("#createPerson").click(function ()
+                {
+                    addPerson();
+                });
+                
+                $("#deletePersonByIdButton").click(function ()
+                {
+                    deletePerson($("#deletePersonById").val());
+                });
+                
+                $("#editPerson").click(function ()
+                {
+                    editPerson($("#Phone").val());
+                });
+            
+                function ReloadData() {
+                $.getJSON("http://localhost:8080/CA2-1.1/api/person/contactinfo/hobby/"+$('#hobbySelect').find(':selected').data('id'), function (result)
+                {
+                    $("#hobbyPersonsTable tbody").html("");
+
+                    var rows = "";
+                    //var index = 0;
+                    $.each(result, function (i,persons)
+                    {
+                        $.each(persons, function (i,person){
+                            rows += '<tr><td>' + person.name + '</td><td>' + person.email + '</td><td>' + person.phones[0].number + '</td></tr>';
+                        });
+                    });
+                    $('#hobbyPersonsTable tbody').append(rows);
+                });
+            }
+            
+            function FindPersonByPhone(number) {
+                $.getJSON("http://localhost:8080/CA2-1.1/api/person/phone/"+number, function (result)
+                {
+                    $('#personByPhone').html("id: "+result.id+" "+" name: "+result.firstname+" "+result.lastname+" "+" email: "+result.email+" "+" phone: "+result.phones[0].number);
+                }).done(function() { console.log('getJSON request succeeded!'); })
+.fail(function() { $('#personByPhone').html("404 person doesn't exists."); })
+.always(function() { console.log('getJSON request ended!'); });
+            }
+            
+            function addPerson() {
+                var person = '{"firstname": "'+$('#FirstName').val()+'","lastname": "'+$('#LastName').val()+'","email": "'+$('#Email').val()+'","phones": [{"number": '+$('#Phone').val()+',"description": "'+$('#Description').val()+'"}],"address": {"street": "'+$('#Street').val()+'","additionalInfo": "'+$('#AddInfo').val()+'","city": "'+$('#City').val()+'","zip": "'+$('#Zip').val()+'"},"hobbies": [{"name": "'+$('#Hobby').val()+'","description": "'+$('#HobbyDesc').val()+'"}]}';
+                console.log(person);
+                $.ajax({
+                    url: "http://localhost:8080/CA2-1.1/api/person",
+                    type: "POST",
+                    data: person,
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function () { console.log("200");}
+                });
+            }
+            
+            function editPerson(number) {
+                $.getJSON("http://localhost:8080/CA2-1.1/api/person/phone/"+number, function (result)
+                {
+                    
+                
+                var person = '{id: '+result.id+',"firstname": "'+$('#FirstName').val()+'","lastname": "'+$('#LastName').val()+'","email": "'+$('#Email').val()+'","phones": [{"number": '+$('#Phone').val()+',"description": "'+$('#Description').val()+'"}],"address": {"street": "'+$('#Street').val()+'","additionalInfo": "'+$('#AddInfo').val()+'","city": "'+$('#City').val()+'","zip": "'+$('#Zip').val()+'"},"hobbies": [{"name": "'+$('#Hobby').val()+'","description": "'+$('#HobbyDesc').val()+'"}]}';
+                console.log(person);
+                $.ajax({
+                    url: "http://localhost:8080/CA2-1.1/api/person",
+                    type: "PUT",
+                    data: person,
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function () { console.log("200");},
+                    error: function () { console.log("500");}
+                });
+                
+                }).fail(function() { $('#Phone').val("Wrong phone number"); });
+            }
+            
+            function deletePerson(id) {
+                $.ajax({
+                    url: "http://localhost:8080/CA2-1.1/api/person/delete/"+id,
+                    type: "DELETE",
+                    data: "",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function () { console.log("200");}
+                });
+            }
+            
+        });    
+        </script>
     </head>
     <body>
-        <h1>Hello World!</h1>
+        <h1>REST API interface</h1>
+        
+        <h3>Choose hobby:</h3>
+        
+        <select id="hobbySelect">
+            <option data-id="Tennis">Tennis</option>
+            <option data-id="Running">Running</option>
+            <option data-id="Kite Surfing">Kite Surfing</option>
+            <option data-id="Bodybuilding">Bodybuilding</option>
+            <option data-id="Piano">Piano</option>
+            <option data-id="Chess">Chess</option>
+            <option data-id="Dancing">Dancing</option>
+            <option data-id="Horse Riding">Horse Riding</option>
+        </select>
+        
+        <input id="searchHobbyButton" type="button" value="Search" /><br />
+        
+        <table id="hobbyPersonsTable" border="1" width="100">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                </tr>
+                <tr>
+                </tr>
+            </tbody>
+        </table>
+        
+        <form id="addPersonForm" action="#"><br />
+            <h3 id="formTitle">Add/edit Person Form</h3>
+            <input type="text" id="FirstName" value="First Name" /><br />
+            <input type="text" id="LastName" value="Last Name" /><br />
+            <input type="text" id="Email" value="Email" /><br />
+            <input required type="text" id="Phone" value="*Phone" />
+            <input type="text" id="Description" value="Phone Description" /><br />
+            <input type="text" id="Street" value="Street" /><br />
+            <input type="text" id="AddInfo" value="AdditionalInfo" /><br />
+            <input type="text" id="City" value="City" /><br />
+            <input type="text" id="Zip" value="Zip" /><br />
+            <input type="text" id="Hobby" value="Hobby" />
+            <input type="text" id="HobbyDesc" value="Hobby Description" /><br />
+            <input type="button" value="Create Person" id="createPerson" />
+            <input type="button" value="Edit Person" id="editPerson" />
+        </form>
+        
+        
+        
+        <h3>Find person by phone: </h3>
+        <input type="text" id="findPersonByPhone" value="phone number" />
+        <input id="searchPhoneButton" type="button" value="Search" /><br />
+        
+        <div id="personByPhone"></div>
+        
+        <h3>Delete person by id: </h3>
+        <input type="text" id="deletePersonById" value="id" />
+        <input id="deletePersonByIdButton" type="button" value="Delete" /><br />
+        
     </body>
 </html>
