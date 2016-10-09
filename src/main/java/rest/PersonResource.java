@@ -45,7 +45,7 @@ public class PersonResource {
 
     @Context
     private UriInfo context;
-    
+
     private static Gson gson = new Gson();
     private EntityManagerFactory emf;
     private Facade facade;
@@ -57,12 +57,13 @@ public class PersonResource {
         emf = Persistence.createEntityManagerFactory("com.mycompany_CA2-1.1_war_1.0-SNAPSHOTPU");
         facade = new Facade(emf);
     }
-    
+ 
     /**
-     * Retrieves representation of an instance of rest.InfoREST
-     *
+     * Get method to retrieve the person with the given phonenumber. If the
+     * phonenumber does not exist, it will throw a PersonNotFoundException.
      * @param phone
-     * @return an instance of java.lang.String
+     * @return
+     * @throws PersonNotFoundException 
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -81,6 +82,13 @@ public class PersonResource {
         return gson.toJson(new PersonMapper(person));
     }
 
+    /**
+     * Get method to retrieve the person with the given id. If the given it does
+     * not exist, it will throw a PersonNotFoundException.
+     * @param id
+     * @return
+     * @throws PersonNotFoundException 
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("complete/{id}")
@@ -100,6 +108,10 @@ public class PersonResource {
         return gson.toJson(pm);
     }
 
+    /**
+     * Get method to retrieve all persons.
+     * @return 
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("complete")
@@ -112,6 +124,11 @@ public class PersonResource {
         return "{\"persons\":" + gson.toJson(personMapperList) + "}";
     }
 
+    /**
+     * Get method to retrieve all people with the given contactinfo. If no people
+     * exist, it will throw a PersonNotFoundException.
+     * @return 
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("contactinfo")
@@ -124,6 +141,13 @@ public class PersonResource {
         return "{\"persons\":" + gson.toJson(personMapper1List) + "}";
     }
 
+    /**
+     * Get method to retrieve a person with the given contactinfo. If no person
+     * exists with the given contactinfo, it will throw a PersonNotFoundException
+     * @param id
+     * @return
+     * @throws PersonNotFoundException
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("contactinfo/{id}")
@@ -144,6 +168,8 @@ public class PersonResource {
     }
 
     /**
+     * Get method to retrieve all people with the given hobby. If no people exists
+     * with the given hobby, it will throw a PersonNotFoundException.
      *
      * @param hobby
      * @return
@@ -170,6 +196,14 @@ public class PersonResource {
         return "{" + gson.toJson(personMapperList) + "}";
     }
 
+    /**
+     * Post method to insert a person in the database. It will auto-increment an
+     * ID for the newly created person.
+     *
+     * @param content
+     * @return
+     * @throws Exception
+     */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -195,7 +229,8 @@ public class PersonResource {
     }
 
     /**
-     * PUT method for updating or creating an instance of InfoREST
+     * PUT method for updating/edit the person with the given ID. If the ID does
+     * not exist in the database, it will throw a PersonNotFoundException.
      *
      * @param content representation for the resource
      */
@@ -223,7 +258,7 @@ public class PersonResource {
         if (pm.getEmail() != null) {
             JPAPerson.setMail(pm.getEmail());
         }
-        if (pm.getPhones()!=null) {
+        if (pm.getPhones() != null) {
             List<Phone> phones = toPhoneList(pm.getPhones());
             JPAPerson.setPhone(phones);
         }
@@ -235,7 +270,7 @@ public class PersonResource {
 
             }
         }
-        if (pm.getHobbies()!=null) {
+        if (pm.getHobbies() != null) {
             JPAPerson.setHobies(toHobbyList(pm.getHobbies()));
         }
 
@@ -245,34 +280,48 @@ public class PersonResource {
 
         return gson.toJson(new PersonMapper(consistentPerson));
     }
-    
-    
-    
+
+    /**
+     * This method deletes the person with the given id. If the ID does not
+     * exist in the database, it will throw a PersonNotFoundException.
+     *
+     * @param id
+     * @return
+     * @throws PersonNotFoundException
+     */
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("delete/{id}")
     public String deletePerson(@PathParam("id") int id) throws PersonNotFoundException {
         Person p = facade.getPerson(id);
-        if(p==null){
+        if (p == null) {
             throw new PersonNotFoundException("Cannot delete, person doesn't exists");
         }
-        
+
         try {
             facade.deleteAddress(p.getAddress().getId());
             List<Phone> phones = p.getPhone();
-            if(phones!=null){
+            if (phones != null) {
                 for (Phone phone : phones) {
                     facade.deletePhone(phone.getId());
                 }
             }
             facade.deletePerson(id);
         } catch (Exception ex) {
-            
+
         }
         return gson.toJson(new PersonMapper(p));
     }
 
+    /**
+     * Method to add hobby. If the hobby does not exist, it creates the hobby
+     * and applies it to a person. If the hobby does exist, it will update the
+     * list of hobbies on a person and add the hobby to the person.
+     * @param hobbyMappers
+     * @param person
+     * @throws Exception 
+     */
     private void addHobby(List<HobbyMapper> hobbyMappers, Person person) throws Exception {
         Hobby hobbyAlreadyExists = null;
         for (HobbyMapper hobbyMapper : hobbyMappers) {
@@ -295,7 +344,15 @@ public class PersonResource {
             }
         }
     }
-
+/**
+ * Method to add a phone. If the phone does not exist, it creates the phone
+ * and applies it to a person. If the phone does exist, it will update the
+ * list of phones on a person, and add the phone to the person.
+ * @param phoneMappers
+ * @param infoEntity
+ * @return
+ * @throws PersonNotFoundException 
+ */
     private List<Phone> addPhone(List<PhoneMapper> phoneMappers, InfoEntity infoEntity) throws PersonNotFoundException {
         List<Phone> phones = new ArrayList<>();
         for (PhoneMapper phoneMapper : phoneMappers) {
@@ -308,7 +365,11 @@ public class PersonResource {
         }
         return phones;
     }
-
+/**
+ * Method to return the list of phones from a person. 
+ * @param phoneM
+ * @return 
+ */
     public List<Phone> toPhoneList(List<PhoneMapper> phoneM) {
         List<Phone> phones = new ArrayList<>();
         for (PhoneMapper phoneMapper : phoneM) {
@@ -318,6 +379,11 @@ public class PersonResource {
         return phones;
     }
 
+    /**
+     * Method to return the list of hobbies from a person.
+     * @param hobbyM
+     * @return 
+     */
     public List<Hobby> toHobbyList(List<HobbyMapper> hobbyM) {
         List<Hobby> hobies = new ArrayList<>();
         for (HobbyMapper hobbyMapper : hobbyM) {
@@ -327,6 +393,13 @@ public class PersonResource {
         return hobies;
     }
 
+    /**
+     * Method to set the address. It checks if the address with the
+     * given ID is null. If it is not, it will fill the address object with
+     * information about street, cityinfo etc. and return the object.
+     * @param addressM
+     * @return 
+     */
     public Address toAddress(AddressMapper addressM) {
         Address addressFromJPA = facade.getAddress(addressM.getId());
         if (addressM.getStreet() != null) {
